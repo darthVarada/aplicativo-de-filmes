@@ -18,6 +18,8 @@ import javax.swing.border.LineBorder;
 public class JanelaCadastro extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
+	private FilmeDao filmeDao = new FilmeDao();
+	private JTextField id;
 	private JTextField titulo;
     private JTextField sinopse;
     private JComboBox<String> genero;
@@ -40,9 +42,15 @@ public class JanelaCadastro extends JPanel {
 	}
 	
 	private JPanel campos() {
-		JPanel campos = new JPanel(new GridLayout(6, 1));
+		JPanel campos = new JPanel(new GridLayout(8, 1));
 		
-		JLabel tituloTexto = new JLabel("TÃ­tulo");
+		JLabel idTexto = new JLabel("ID");
+		id = new JTextField();
+		id.setEditable(false);
+		campos.add(idTexto);
+		campos.add(id);
+		
+		JLabel tituloTexto = new JLabel("Título");
 		titulo = new JTextField();
 		campos.add(tituloTexto);
 		campos.add(titulo);
@@ -53,8 +61,8 @@ public class JanelaCadastro extends JPanel {
 		campos.add(sinopseTexto);
 		campos.add(sinopse);
 		
-		JLabel generoTexto = new JLabel("GÃªnero");
-		genero = new JComboBox<>(new String[] {"AÃ§Ã£o", "Romance", "Animes", "Comedia", "Terror"});
+		JLabel generoTexto = new JLabel("Gênero");
+		genero = new JComboBox<>(new String[] {"Ação", "Romance", "Animes", "Comedia", "Terror"});
 		campos.add(generoTexto);
 		campos.add(genero);
 		
@@ -87,7 +95,7 @@ public class JanelaCadastro extends JPanel {
 		assistido = new JCheckBox("Assistido");
 		outrosBotoes.add(assistido);
 		
-		JLabel avaliacao = new JLabel("AvaliaÃ§Ã£o");
+		JLabel avaliacao = new JLabel("Avaliação");
 		outrosBotoes.add(avaliacao);
 		starRater = new StarRater(5);
 		outrosBotoes.add(starRater);
@@ -108,16 +116,23 @@ public class JanelaCadastro extends JPanel {
 				filme.setAssistido(assistido.isSelected());
 				filme.setAvaliacao(starRater.getSelection());
 				filme.setGenero((String)genero.getSelectedItem());
-				filme.setId(1);
 				filme.setOndeAssistir(ondeAssistir.getSelection().getActionCommand());
 				filme.setSinopse(sinopse.getText());
 				filme.setTitulo(titulo.getText());
 				System.out.println(filme);
+				if(id.getText().trim().equals("") || id.getText()== null) {
+					filmeDao.salvar(filme);
+				}else {
+					filme.setId(Long.parseLong(id.getText()));
+					filmeDao.atualizar(filme);
+				}
+				System.out.println(filmeDao.getList());
 			}
 		});
 		botaoCancelar.addActionListener(acaocancelar ->{
 			titulo.setText("");
 			sinopse.setText("");
+			id.setText("");
 			ondeAssistir.clearSelection();
 	        assistido.setSelected(false);
 	        starRater.setSelection(0);
@@ -130,11 +145,38 @@ public class JanelaCadastro extends JPanel {
 	}
 	private JPanel campoImagem() {
 		JPanel dimencoes = new JPanel();
-		ImageIcon img = new ImageIcon(new ImageIcon("imagens/Interstellar_Filme.png").getImage().getScaledInstance(120, 200, Image.SCALE_DEFAULT));
+		ImageIcon img = new ImageIcon(new ImageIcon("src/projeto_semestral/victor_projeto/imagens/Interstellar_Filme.png").getImage().getScaledInstance(120, 200, Image.SCALE_DEFAULT));
 		JLabel imagem = new JLabel(img);
 		dimencoes.add(imagem);
 		return dimencoes;
 	}
 	
+
+	public JTextField getTitulo() {
+		return titulo;
+	}
+
+	public JTextField getSinopse() {
+		return sinopse;
+	}
+
+	public JComboBox<String> getGenero() {
+		return genero;
+	}
+
+	public ButtonGroup getOndeAssistir() {
+		return ondeAssistir;
+	}
+
+	public JCheckBox getAssistido() {
+		return assistido;
+	}
+
+	public StarRater getStarRater() {
+		return starRater;
+	}
+	public JTextField getId() {
+		return id;
+	}
 	
 }
